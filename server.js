@@ -5,8 +5,21 @@ const GEMINI_API = 'https://generativelanguage.googleapis.com';
 
 app.use(express.json());
 
-// 所有 request forward 去 Gemini
-app.all('/*', async (req, res) => {
+// CORS preflight — must be before app.all
+app.options('*', (req, res) => {
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  });
+  res.sendStatus(204);
+});
+
+// Health check
+app.get('/', (req, res) => res.send('ok'));
+
+// Proxy all Gemini calls
+app.all('/v1beta/*', async (req, res) => {
   const target = GEMINI_API + req.originalUrl;
   try {
     const resp = await fetch(target, {
@@ -20,15 +33,6 @@ app.all('/*', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: { message: err.message } });
   }
-});
-
-app.options('*', (req, res) => {
-  res.set({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  });
-  res.sendStatus(204);
 });
 
 app.listen(PORT, () => console.log('Gemini proxy on', PORT));
