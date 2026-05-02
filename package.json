@@ -1,0 +1,15 @@
+{
+  "name": "gemini-proxy",
+  "version": "1.0.0",
+  "description": "Gemini API proxy for Hong Kong users",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
